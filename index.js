@@ -1,30 +1,28 @@
 const express = require('express');
-const axios = require('axios');
 const app = express();
 
-app.get('/api/hello', async (req, res) => {
-  const visitorName = req.query.visitor_name;
-  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+// Define the endpoint handler
+app.get('/api/hello', (req, res) => {
+    const visitorName = req.query.visitor_name || 'Guest';
+    const clientIp = req.ip; // Gets the IP address of the requester
+    const location = 'New York'; // For simplicity, assume requester's location
 
-  try {
-    // Get location from IP
-    const locationResponse = await axios.get(`https://ipapi.co/${clientIp}/json/`);
-    const location = locationResponse.data.city;
+    // Simulate fetching temperature (can be extended with real API)
+    const temperature = 11;
 
-    // Get weather data
-    const weatherResponse = await axios.get(`http://api.weatherapi.com/v1/current.json?key=306178e762614bd7a97195659243006&q=${location}`);
-    const temperature = weatherResponse.data.current.temp_c;
+    // Construct the response object
+    const response = {
+        client_ip: clientIp,
+        location: location,
+        greeting: `Hello, ${visitorName}!, the temperature is ${temperature} degrees Celsius in ${location}`
+    };
 
-    res.json({
-      client_ip: clientIp,
-      location: location,
-      greeting: `Hello, ${visitorName}!, the temperature is ${temperature} degrees Celsius in ${location}`
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Error retrieving data' });
-  }
+    // Send JSON response
+    res.json(response);
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+// Start the server
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });

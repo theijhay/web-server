@@ -1,16 +1,23 @@
 {
   "name": "web-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "A web server project",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ng serve",
+    "build": "ng build",
+    "postinstall": "ng build --prod",
+    "serve": "node api/hello.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "axios": "^1.7.2",
-    "express": "^4.19.2"
-  }
+    "@angular/core": "^13.0.0",
+    "@angular/cli": "^13.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@angular/compiler-cli": "^13.0.0",
+    "@angular-devkit/build-angular": "^13.0.0"
+  },
+  "author": "",
+  "license": "ISC"
 }
