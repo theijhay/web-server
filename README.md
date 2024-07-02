@@ -30,9 +30,9 @@ web-server/
 
 ```json
 {
-  "client_ip": "127.0.0.1",
-  "location": "New York",
-  "greeting": "Hello, Mark!, the temperature is 11 degrees Celsius in New York"
+  "client_ip": "102.89.47.244",
+  "location": "Lagos",
+  "greeting": "Hello, Mark!, the temperature is 27.1 degrees Celsius in Lagos"
 }
 ```
 
@@ -110,19 +110,27 @@ vercel --prod
 
 `api/hello.js`
 ```
+const axios = require('axios');
+
 module.exports = async (req, res) => {
   const visitorName = req.query.visitor_name;
+  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-  // Mock data
-  const clientIp = '127.0.0.1';
-  const location = 'New York';
-  const temperature = 11; // Celsius
+  try {
+    const locationResponse = await axios.get(`http://ip-api.com/json/${clientIp}`);
+    const locationData = locationResponse.data;
 
-  res.json({
-    client_ip: clientIp,
-    location: location,
-    greeting: `Hello, ${visitorName}!, the temperature is ${temperature} degrees Celsius in ${location}`
-  });
+    const weatherResponse = await axios.get(`https://api.open-meteo.com/v1/forecast?latitude=${locationData.lat}&longitude=${locationData.lon}&current_weather=true`);
+    const weatherData = weatherResponse.data.current_weather;
+
+    res.json({
+      client_ip: clientIp,
+      location: locationData.city,
+      greeting: `Hello, ${visitorName}!, the temperature is ${weatherData.temperature} degrees Celsius in ${locationData.city}`
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching data' });
+  }
 };
 
 ```
