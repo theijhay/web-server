@@ -1,8 +1,12 @@
+const axios = require('axios');
+
 module.exports = async (req, res) => {
   const visitorName = req.query.visitor_name;
 
-  // Mock data
-  const clientIp = '127.0.0.1';
+  // Retrieve the client's IP address
+  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  // Mock data for demonstration purposes
   const location = 'New York';
   const temperature = 11; // Celsius
 
